@@ -37,6 +37,13 @@ processed/*
 reports/*
 annotations/*
 
+# Keep raw subfolders
+!raw/vacancies/
+!raw/resumes/
+!raw/vacancies/.gitkeep
+!raw/resumes/.gitkeep
+
+# Keep root placeholders
 !raw/.gitkeep
 !processed/.gitkeep
 !reports/.gitkeep
