@@ -171,17 +171,25 @@ def infer_seniority(text: str) -> str:
 
 def infer_domain(text: str) -> str:
     lower = text.lower()
+
     if any(x in lower for x in ("machine learning", "ml engineer", "data scientist", "deep learning")):
         return "machine learning"
+
     if any(x in lower for x in ("data analyst", "analytics", "bi ", "business intelligence")):
         return "analytics"
-    if any(x in lower for x in (".net", "c#", "asp.net")):
+
+    # Сначала .NET, потом generic backend
+    if any(x in lower for x in (".net", "dotnet", "c#", "c sharp", "asp.net", "asp net")):
         return ".net software development"
+
     if any(x in lower for x in ("backend", "spring boot", "java developer", "rest api")):
         return "backend software development"
+
     if any(x in lower for x in ("frontend", "react", "javascript", "html", "css")):
         return "frontend software development"
+
     return "software engineering"
+
 
 
 def infer_education(text: str) -> str:
@@ -203,13 +211,26 @@ def extract_languages(text: str) -> List[str]:
     parts = [x.strip(" .") for x in re.split(r"[,;/]", chunk) if x.strip()]
     return parts
 
-
+#фикс 
 def extract_skills(text: str, skills_map: Dict[str, str]) -> List[str]:
     lower = text.lower()
     found = set()
+
     for raw, norm in skills_map.items():
-        if raw in lower:
+        raw_norm = raw.lower().strip()
+        if not raw_norm:
+            continue
+
+        raw_escaped = re.escape(raw_norm)
+
+        if re.search(r"[a-zA-Z0-9]", raw_norm):
+            pattern = rf"(?<![a-zA-Z0-9]){raw_escaped}(?![a-zA-Z0-9])"
+        else:
+            pattern = raw_escaped
+
+        if re.search(pattern, lower, re.IGNORECASE):
             found.add(norm)
+
     return sorted(found)
 
 
@@ -389,23 +410,67 @@ def extract_resume_title(lines: list[str]) -> str:
 def extract_last_position(text: str, fallback_title: str = "") -> str:
     lines = [x.strip() for x in text.splitlines() if x.strip()]
 
-    for i, line in enumerate(lines[:80]):
+    # 1. Сначала ищем начало секции опыта
+    experience_headers = (
+        "experience",
+        "professional experience",
+        "work experience",
+        "employment history"
+    )
+
+    exp_start = None
+    for i, line in enumerate(lines):
+        low = line.lower()
+        if any(h in low for h in experience_headers):
+            exp_start = i
+            break
+
+    # 2. Если нашли секцию опыта, ищем первую должность после неё
+    if exp_start is not None:
+        exp_lines = lines[exp_start + 1 : min(len(lines), exp_start + 40)]
+
+        for i, line in enumerate(exp_lines):
+            low = line.lower()
+
+            # пропускаем мусорные и явно не должностные строки
+            if is_service_line(line):
+                continue
+            if low.startswith(("achievement", "responsibility", "responsibilities", "education", "certifications", "skills")):
+                continue
+
+            # если строка похожа на дату/период, пропускаем
+            if re.search(r"\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b", low):
+                continue
+            if re.search(r"\b(19|20)\d{2}\b", low) and len(line) < 40:
+                continue
+
+            if looks_like_job_title(line):
+                return line
+
+            # Частый паттерн: Company -> Position -> Date
+            if i + 1 < len(exp_lines):
+                nxt = exp_lines[i + 1].strip()
+                if looks_like_job_title(nxt):
+                    return nxt
+
+    # 3. Если секция опыта не помогла, ищем по всему тексту, но осторожно
+    for i, line in enumerate(lines[:120]):
+        low = line.lower()
+
+        if is_service_line(line):
+            continue
+        if low.startswith(("skills", "education", "certifications", "languages")):
+            continue
+
+        # не брать строки из блока навыков/технологий
+        if sum(ch in line for ch in ",;") >= 2:
+            continue
+
         if looks_like_job_title(line):
             prev_line = lines[i - 1].lower() if i > 0 else ""
             if prev_line.startswith(("phone", "address", "portfolio", "email", "skills", "education", "certifications")):
                 continue
             return line
-
-    patterns = [
-        r"\n([A-Z][^\n]{1,100})\n([A-Z][^\n]{1,100})\n(?:[A-Z]{3}\s+\d{4}|\d{4})",
-        r"\n([A-Z][^\n]{1,100})\n([A-Z][^\n]{1,100}(?:Developer|Engineer|Architect|Analyst)[^\n]{0,40})\n",
-    ]
-    for pattern in patterns:
-        m = re.search(pattern, text, re.MULTILINE)
-        if m:
-            candidate = m.group(2).strip()
-            if looks_like_job_title(candidate):
-                return candidate
 
     return fallback_title
 
@@ -436,23 +501,26 @@ def parse_resume_text(path: Path, text: str, skills_map: Dict[str, str], fallbac
 
 
 def normalize_vacancy_row(row: dict, source_file: str, fallback_id: int, skills_map: Dict[str, str]) -> dict:
-    title = (row.get("title") or row.get("job_title") or row.get("name") or "").strip()
-    description = (
+    raw_title = (row.get("title") or row.get("job_title") or row.get("name") or "").strip()
+    raw_description = (
         row.get("description")
         or row.get("job_description")
         or row.get("text")
         or row.get("content")
         or ""
     ).strip()
-    combined = f"{title}\n{description}".strip()
-    if not title:
-        title = guess_title_from_lines([x for x in combined.splitlines() if x.strip()])
+
+    combined = clean_text(f"{raw_title}\n{raw_description}".strip())
+    lines = [x.strip() for x in combined.splitlines() if x.strip()]
+
+    title = raw_title if raw_title else extract_vacancy_title(lines)
+
     return {
         "vacancy_id": str(row.get("vacancy_id") or f"V{fallback_id:05d}"),
         "title": title,
-        "description": clean_text(combined),
+        "description": combined,
         "required_skills": ";".join(extract_skills(combined, skills_map)),
-        "preferred_skills": normalize_skill_name(str(row.get("preferred_skills") or "")).replace(",", ";"),
+        "preferred_skills": normalize_skill_name(row.get("preferred_skills") or "").replace(",", ";"),
         "min_experience_years": row.get("min_experience_years") or extract_years_experience(combined) or "",
         "education_level": row.get("education_level") or infer_education(combined),
         "domain": row.get("domain") or infer_domain(combined),
@@ -464,23 +532,33 @@ def normalize_vacancy_row(row: dict, source_file: str, fallback_id: int, skills_
 
 
 def normalize_resume_row(row: dict, source_file: str, fallback_id: int, skills_map: Dict[str, str]) -> dict:
-    text = (
+    raw_text = (
         row.get("candidate_text")
         or row.get("resume_text")
         or row.get("text")
         or row.get("content")
         or ""
     )
-    title = row.get("title") or row.get("last_position") or ""
-    combined = f"{title}\n{text}".strip()
-    if not title:
-        title = guess_title_from_lines([x for x in combined.splitlines() if x.strip()])
+
+    raw_title = (row.get("title") or "").strip()
+    raw_last_position = (row.get("last_position") or "").strip()
+
+    combined = clean_text(f"{raw_title}\n{raw_text}".strip())
+    lines = [x.strip() for x in combined.splitlines() if x.strip()]
+
+    title = raw_title if raw_title else extract_resume_title(lines)
+    last_position = raw_last_position if raw_last_position else extract_last_position(combined, fallback_title=title)
+
     return {
         "resume_id": str(row.get("resume_id") or f"R{fallback_id:05d}"),
-        "candidate_text": clean_text(combined),
-        "skills": ";".join(extract_skills(combined, skills_map)) if not row.get("skills") else str(row.get("skills")).replace(",", ";"),
+        "candidate_text": combined,
+        "skills": (
+            ";".join(extract_skills(combined, skills_map))
+            if not row.get("skills")
+            else str(row.get("skills")).replace(",", ";")
+        ),
         "total_experience_years": row.get("total_experience_years") or extract_years_experience(combined) or "",
-        "last_position": row.get("last_position") or title,
+        "last_position": last_position,
         "education": row.get("education") or infer_education(combined),
         "specialization": row.get("specialization") or "",
         "domain": row.get("domain") or infer_domain(combined),
@@ -491,7 +569,6 @@ def normalize_resume_row(row: dict, source_file: str, fallback_id: int, skills_m
         "source_file": source_file,
         "title": title,
     }
-
 
 def parse_files(base_dir: Path, kind: str, patterns: List[str], skills_map: Dict[str, str]) -> Tuple[List[dict], List[ParseLogRow]]:
     records: List[dict] = []
