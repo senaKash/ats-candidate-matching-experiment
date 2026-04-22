@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+build/
+dist/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local config
+.env
+.env.*
+parser_config.json
+smart_labels_config.json
+
+# Project data (do not commit real resumes / vacancies / annotations)
+raw/
+processed/
+reports/
+
+# Annotation outputs
+annotations/*.csv
+annotations/*.xlsx
+
+# Temporary files
+*.log
+*.tmp
+*.bak

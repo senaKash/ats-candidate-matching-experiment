@@ -1,0 +1,17 @@
+{
+  ".NET": [".net", "dotnet", ".net core", ".net 3.1", ".net 5.0", ".net 6.0", ".net classic"],
+  "C#": ["c#", "c sharp"],
+  "ASP.NET": ["asp net", "asp.net", "asp net mvc", "asp.net mvc", "mvc razor"],
+  "Web API": ["http web api", "web api", "rest api"],
+  "Entity Framework": ["ef", "entity framework", "linq2db"],
+  "PostgreSQL": ["postgres", "postgresql", "posgres"],
+  "MS SQL": ["ms sql", "mssql", "sql server"],
+  "MongoDB": ["mongo db", "mongodb"],
+  "Docker": ["docker"],
+  "Azure": ["azure", "azure pipelines", "service bus"],
+  "AWS": ["aws", "s3", "ec2"],
+  "Kafka": ["apache kafka", "kafka"],
+  "WinForms": ["winforms", "win forms"],
+  "WPF": ["wpf"],
+  "jQuery": ["jquery"]
+}

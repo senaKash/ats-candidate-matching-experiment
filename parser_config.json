@@ -1,0 +1,13 @@
+{
+  "project_dir": ".",
+  "raw_vacancies_dir": "raw/vacancies",
+  "raw_resumes_dir": "raw/resumes",
+  "processed_dir": "processed",
+  "annotations_dir": "annotations",
+  "reports_dir": "reports",
+  "generate_labels_template": true,
+  "pairs_per_vacancy": 20,
+  "shuffle_pairs": false,
+  "skills_map_path": "skills_map_example.json",
+  "file_patterns": ["*.txt", "*.md", "*.csv", "*.tsv", "*.json", "*.jsonl", "*.docx"]
+}

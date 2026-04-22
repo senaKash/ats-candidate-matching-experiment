@@ -1,0 +1,25 @@
+Как запускать с кнопки в IDE
+
+1. Положи файлы рядом:
+   - parser_hr_dataset_v3.py
+   - parser_config.json
+   - skills_map_example.json
+
+2. Структура проекта:
+   project/
+   ├── parser_hr_dataset_v3.py
+   ├── parser_config.json
+   ├── skills_map_example.json
+   ├── raw/
+   │   ├── vacancies/
+   │   └── resumes/
+   ├── processed/
+   ├── annotations/
+   └── reports/
+
+3. В IDE просто открой parser_hr_dataset_v3.py и нажми Run.
+   Аргументы не нужны.
+
+4. Скрипт сам прочитает parser_config.json из той же папки, где лежит скрипт.
+
+5. Если захочешь перенести скрипт в папку scripts/, просто положи туда и parser_config.json тоже.
