@@ -27,20 +27,23 @@ env/
 .DS_Store
 Thumbs.db
 
-# Local config
+# Local config overrides / secrets
 .env
 .env.*
-parser_config.json
-smart_labels_config.json
 
-# Project data (do not commit real resumes / vacancies / annotations)
-raw/
-processed/
-reports/
+# Keep folder structure, but ignore contents
+raw/*
+processed/*
+reports/*
+annotations/*
 
-# Annotation outputs
-annotations/*.csv
-annotations/*.xlsx
+!raw/.gitkeep
+!processed/.gitkeep
+!reports/.gitkeep
+!annotations/.gitkeep
+
+# Optional: keep README in annotations if you add one
+!annotations/README.md
 
 # Temporary files
 *.log
