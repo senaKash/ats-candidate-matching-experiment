@@ -1,0 +1,15 @@
+{
+  "project_dir": ".",
+  "vacancies_csv": "processed/vacancies.csv",
+  "resumes_csv": "processed/resumes_experiment.csv",
+  "annotations_dir": "annotations",
+  "reports_dir": "reports",
+  "output_labels_file": "labels_template_smart_experiment.csv",
+  "output_report_file": "pair_selection_report_experiment.csv",
+  "pairs_per_vacancy": 12,
+  "top_k": 4,
+  "borderline_k": 4,
+  "random_k": 4,
+  "random_seed": 42,
+  "min_token_len": 2
+}

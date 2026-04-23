@@ -1,0 +1,16 @@
+﻿vacancy_id,resume_id,candidate_id,version_type,annotator_1_label,annotator_2_label,final_label,comment,selection_bucket,auto_score
+V00001,R002_AI,C002,ai_assisted,,,,,top,0.516685
+V00001,R001_ATS,C001,ats_optimized,,,,,top,0.142748
+V00001,R003_ATS,C003,ats_optimized,,,,,top,0.11337
+V00002,R002_WEAK,C002,weakly_structured,,,,,top,0.45196
+V00002,R001_ORIG,C001,original,,,,,top,0.124325
+V00002,R003_WEAK,C003,weakly_structured,,,,,top,0.123484
+V00003,R003_ATS,C003,ats_optimized,,,,,top,0.222595
+V00003,R001_AI,C001,ai_assisted,,,,,top,0.132494
+V00003,R002_ORIG,C002,original,,,,,top,0.127656
+V00004,R002_ATS,C002,ats_optimized,,,,,top,0.458415
+V00004,R001_ATS,C001,ats_optimized,,,,,top,0.15722
+V00004,R003_ORIG,C003,original,,,,,top,0.010812
+V00005,R002_ATS,C002,ats_optimized,,,,,top,0.402024
+V00005,R001_ATS,C001,ats_optimized,,,,,top,0.020952
+V00005,R003_WEAK,C003,weakly_structured,,,,,top,0.018067

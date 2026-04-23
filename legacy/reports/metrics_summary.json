@@ -1,0 +1,20 @@
+{
+  "n_total_pairs": 100,
+  "n_labeled_pairs": 100,
+  "n_unlabeled_pairs": 0,
+  "n_vacancies": 5,
+  "overall_mean": {
+    "mrr_strict": 0.866667,
+    "mrr_relaxed": 1.0,
+    "precision_strict@5": 0.64,
+    "precision_relaxed@5": 0.88,
+    "recall_strict@5": 0.65,
+    "recall_relaxed@5": 0.385318,
+    "ndcg@5": 0.833938,
+    "precision_strict@10": 0.46,
+    "precision_relaxed@10": 0.8,
+    "recall_strict@10": 0.95,
+    "recall_relaxed@10": 0.689683,
+    "ndcg@10": 0.859065
+  }
+}

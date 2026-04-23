@@ -31,33 +31,9 @@ Thumbs.db
 .env
 .env.*
 
-# Keep folder structure, but ignore contents
-raw/**
-processed/*
-reports/*
-annotations/*
-
-# Keep raw folder structure
-!raw/
-!raw/vacancies/
-!raw/resumes/
-
-# Ignore files inside raw subfolders
-raw/vacancies/*
-raw/resumes/*
-
-# Keep placeholders
-!raw/.gitkeep
-!raw/vacancies/.gitkeep
-!raw/resumes/.gitkeep
-!processed/.gitkeep
-!reports/.gitkeep
-!annotations/.gitkeep
-
 # Optional: keep README in annotations if you add one
 !annotations/README.md
 
 # Temporary files
-*.log
 *.tmp
 *.bak
